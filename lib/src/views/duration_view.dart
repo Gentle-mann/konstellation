@@ -45,22 +45,28 @@ class DurationView extends StatelessWidget {
                     const Text('Play'),
                   ],
                 ),
-                const Column(
+                Column(
                   children: [
-                    Icon(
-                      Icons.edit_rounded,
-                      color: Colors.yellow,
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.edit_rounded,
+                        color: Colors.yellow,
+                      ),
                     ),
-                    Text('Edit'),
+                    const Text('Edit'),
                   ],
                 ),
                 Column(
                   children: [
-                    Icon(
-                      Icons.delete_rounded,
-                      color: Colors.red,
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.delete_rounded,
+                        color: Colors.red,
+                      ),
                     ),
-                    Text('Delete'),
+                    const Text('Delete'),
                   ],
                 ),
               ],

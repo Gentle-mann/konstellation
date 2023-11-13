@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:konstellation/src/providers/timer_provider.dart';
+import 'package:provider/provider.dart';
 
 import 'src/screens/screens.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const Konstellation());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Konstellation extends StatelessWidget {
+  const Konstellation({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Konstellation',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (context) => TimerProvider(),
+      child: MaterialApp(
+        title: 'Konstellation',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const HomeScreen(),
       ),
-      home: const HomeScreen(),
     );
   }
 }

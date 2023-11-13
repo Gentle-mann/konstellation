@@ -14,9 +14,27 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         actions: [
           IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.play_arrow_rounded, color: Colors.green)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
+            onPressed: () {
+              final timesModel = TimesModel(
+                whiteDuration: 5,
+                whiteIncrement: 0,
+                blackDuration: 5,
+                blackIncrement: 0,
+                useIncrement: false,
+                useSeparateTimes: false,
+              );
+
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) {
+                  return GameDurationScreen(time: timesModel, add: false);
+                }),
+              );
+            },
+            icon: const Icon(
+              Icons.play_arrow_rounded,
+              color: Colors.green,
+            ),
+          ),
         ],
         elevation: 0,
         title: const MediumText(
@@ -47,6 +65,7 @@ class HomeScreen extends StatelessWidget {
                           MaterialPageRoute(builder: (context) {
                             return GameDurationScreen(
                               time: TimesModel.times[index],
+                              add: false,
                             );
                           }),
                         );
