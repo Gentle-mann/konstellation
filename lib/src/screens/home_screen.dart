@@ -12,30 +12,6 @@ class HomeScreen extends StatelessWidget {
     ScreenSizeConfig().initialize(context);
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              final timesModel = TimesModel(
-                whiteDuration: 5,
-                whiteIncrement: 0,
-                blackDuration: 5,
-                blackIncrement: 0,
-                useIncrement: false,
-                useSeparateTimes: false,
-              );
-
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) {
-                  return GameDurationScreen(time: timesModel, add: false);
-                }),
-              );
-            },
-            icon: const Icon(
-              Icons.play_arrow_rounded,
-              color: Colors.green,
-            ),
-          ),
-        ],
         elevation: 0,
         title: const MediumText(
           title: 'Konstellation',
@@ -81,6 +57,30 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          final timesModel = TimesModel(
+            whiteDuration: 10,
+            whiteIncrement: 0,
+            blackDuration: 10,
+            blackIncrement: 0,
+            useIncrement: false,
+            useSeparateTimes: false,
+          );
+
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) {
+              return GameDurationScreen(time: timesModel, add: false);
+            }),
+          );
+        },
+        child: const Icon(
+          Icons.play_arrow_rounded,
+          color: Colors.green,
+          size: 50,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

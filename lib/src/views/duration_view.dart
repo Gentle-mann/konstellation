@@ -51,7 +51,7 @@ class DurationView extends StatelessWidget {
                       onPressed: () {},
                       icon: const Icon(
                         Icons.edit_rounded,
-                        color: Colors.yellow,
+                        color: Colors.deepPurple,
                       ),
                     ),
                     const Text('Edit'),

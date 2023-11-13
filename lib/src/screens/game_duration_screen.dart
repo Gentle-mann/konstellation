@@ -39,9 +39,10 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
   late final blackIncrementController = TextEditingController();
 
   void startWhiteTime() {
-    whiteTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    whiteTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (whiteTime > 0) {
         isBothTimerActive = true;
+
         setState(() {
           whiteTime--;
         });
@@ -59,6 +60,7 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
     blackTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (blackTime > 0) {
         isBothTimerActive = true;
+
         setState(() {
           blackTime--;
         });
@@ -92,6 +94,9 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
       blackInitialTime = newTimesModel!.blackDuration * 60;
       blackTime = blackInitialTime;
       blackIncrement = newTimesModel!.blackIncrement;
+      print('modelduration: ${newTimesModel!.whiteDuration}');
+      print(whiteTime);
+      print('white initial: $whiteInitialTime');
     });
   }
 
@@ -181,7 +186,7 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
     useIncrement = widget.time.useIncrement;
     useSeparateTimes = widget.time.useSeparateTimes;
     timesModel = TimesModel(
-      whiteDuration: int.parse(whiteIncrementController.text),
+      whiteDuration: int.parse(whiteTimeController.text),
       whiteIncrement: int.parse(whiteIncrementController.text),
       blackDuration: int.parse(blackTimeController.text),
       blackIncrement: int.parse(blackIncrementController.text),
@@ -230,14 +235,17 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
                       } else {
                         final activeTimer = getActiveTimer('');
                         if (activeTimer == null) {
+                          whiteTime += whiteIncrement;
                           startBlackTime();
                           incrementBlackCounter(blackCounter);
                         } else {
                           stopWhiteTimer();
                           if (blackTimer == null) {
+                            whiteTime += whiteIncrement;
                             incrementBlackCounter(blackCounter);
                             startBlackTime();
                           } else if (!blackTimer!.isActive) {
+                            whiteTime += whiteIncrement;
                             incrementBlackCounter(blackCounter);
                             startBlackTime();
                           }
@@ -292,7 +300,8 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
                         if (!isBothTimerActive) {
                           newTimesModel = await openDialog();
                           setState(() {
-                            TimesModel.times.add(newTimesModel!);
+                            //TimesModel.times.add(newTimesModel!);
+
                             whiteInitialTime =
                                 newTimesModel!.whiteDuration * 60;
                             whiteTime = whiteInitialTime;
@@ -303,6 +312,8 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
                             blackIncrement = newTimesModel!.blackIncrement;
                             whiteCounter = 0;
                             blackCounter = 0;
+                            blackTimeController.text =
+                                newTimesModel!.blackDuration.toString();
                           });
                         }
                       },
@@ -328,14 +339,17 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
                     } else {
                       final activeTimer = getActiveTimer('');
                       if (activeTimer == null) {
+                        blackTime += blackIncrement;
                         startWhiteTime();
                         incrementWhiteCounter(whiteCounter);
                       } else {
                         stopBlackTimer();
                         if (whiteTimer == null) {
+                          blackTime += blackIncrement;
                           incrementWhiteCounter(whiteCounter);
                           startWhiteTime();
                         } else if (!whiteTimer!.isActive) {
+                          blackTime += blackIncrement;
                           incrementWhiteCounter(whiteCounter);
                           startWhiteTime();
                         }
@@ -383,6 +397,14 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
                 ),
               ),
             ),
+            Positioned(
+              top: 10,
+              left: 10,
+              child: Text('+ $increment',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  )),
+            ),
             Center(
               child: isTimeup
                   ? const Icon(
@@ -408,96 +430,91 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
       context: context,
       builder: ((context) {
         return StatefulBuilder(builder: (context, setState) {
-          return SizedBox(
-            height: ScreenSizeConfig.screenHeight * 0.1,
-            child: AlertDialog(
-              scrollable: true,
-              content: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CheckboxListTile(
-                    title:
-                        const Text('Use different times for White and Black'),
-                    value: useSeparateTimes,
-                    onChanged: (value) {
-                      toggleUseSeparateTime(setState, value);
-                    },
+          return AlertDialog(
+            scrollable: true,
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CheckboxListTile(
+                  title: const Text('Use different times for White and Black'),
+                  value: useSeparateTimes,
+                  onChanged: (value) {
+                    toggleUseSeparateTime(setState, value);
+                  },
+                ),
+                CheckboxListTile(
+                  title: const Text('Use Increment'),
+                  value: useIncrement,
+                  onChanged: (value) {
+                    toggleUseIncrement(setState, value);
+                  },
+                ),
+                if (useSeparateTimes) const MediumText(title: 'White'),
+                TimerField(
+                  title: 'Time (in minutes)',
+                  controller: whiteTimeController,
+                  autofocus: true,
+                ),
+                const SizedBox(height: 10),
+                if (useIncrement)
+                  TimerField(
+                    title: 'White Increment (in seconds)',
+                    controller: whiteIncrementController,
                   ),
-                  CheckboxListTile(
-                    title: const Text('Use Increment'),
-                    value: useIncrement,
-                    onChanged: (value) {
-                      toggleUseIncrement(setState, value);
-                    },
-                  ),
-                  if (useSeparateTimes) const MediumText(title: 'White'),
+                const SizedBox(height: 10),
+                if (useSeparateTimes) const MediumText(title: 'Black'),
+                if (useSeparateTimes)
                   TimerField(
                     title: 'Time (in minutes)',
-                    controller: whiteTimeController,
-                    autofocus: true,
+                    controller: blackTimeController,
                   ),
-                  const SizedBox(height: 10),
-                  if (useIncrement)
-                    TimerField(
-                      title: 'White Increment (in seconds)',
-                      controller: whiteIncrementController,
-                    ),
-                  const SizedBox(height: 10),
-                  if (useSeparateTimes) const MediumText(title: 'Black'),
-                  if (useSeparateTimes)
-                    TimerField(
-                      title: 'Time (in minutes)',
-                      controller: blackTimeController,
-                    ),
-                  const SizedBox(height: 10),
-                  if (useIncrement)
-                    TimerField(
-                      title: 'Black Increment (in seconds)',
-                      controller: blackIncrementController,
-                    ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      if (whiteTimeController.text != '') {
-                        timesModel = TimesModel(
-                          whiteDuration: int.parse(whiteTimeController.text),
-                          whiteIncrement:
-                              int.tryParse(whiteIncrementController.text) ?? 0,
-                          blackDuration:
-                              int.tryParse(blackTimeController.text) ??
-                                  int.parse(whiteTimeController.text),
-                          blackIncrement:
-                              int.tryParse(blackIncrementController.text) ?? 0,
-                          useIncrement: useIncrement,
-                          useSeparateTimes: useSeparateTimes,
-                        );
-                        if (!timesModel!.useSeparateTimes) {
-                          timesModel!.blackDuration = timesModel!.whiteDuration;
-                        }
-
-                        Navigator.of(context).pop(timesModel);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please enter at the game duration.'),
-                          ),
-                        );
-                      }
-                    },
-                    child: const Text('SAVE')),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text(
-                    'CANCEL',
-                    style: TextStyle(color: Colors.red),
+                const SizedBox(height: 10),
+                if (useIncrement)
+                  TimerField(
+                    title: 'Black Increment (in seconds)',
+                    controller: blackIncrementController,
                   ),
-                ),
               ],
             ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    if (whiteTimeController.text != '') {
+                      timesModel = TimesModel(
+                        whiteDuration: int.parse(whiteTimeController.text),
+                        whiteIncrement:
+                            int.tryParse(whiteIncrementController.text) ?? 0,
+                        blackDuration: int.tryParse(blackTimeController.text) ??
+                            int.parse(whiteTimeController.text),
+                        blackIncrement:
+                            int.tryParse(blackIncrementController.text) ?? 0,
+                        useIncrement: useIncrement,
+                        useSeparateTimes: useSeparateTimes,
+                      );
+                      if (!timesModel!.useSeparateTimes) {
+                        timesModel!.blackDuration = timesModel!.whiteDuration;
+                      }
+
+                      Navigator.of(context).pop(timesModel);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please enter at the game duration.'),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('SAVE')),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'CANCEL',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           );
         });
       }),
