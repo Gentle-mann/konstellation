@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
+
 import 'package:flutter/material.dart';
 import 'package:konstellation/src/models/times_model.dart';
 import 'package:konstellation/src/screen_size_config.dart';
@@ -33,6 +35,7 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
   late int blackIncrement;
   late TimesModel? newTimesModel;
   late TimesModel? timesModel;
+  late final audioPlayer = AudioPlayer();
   late final whiteTimeController = TextEditingController();
   late final whiteIncrementController = TextEditingController();
   late final blackTimeController = TextEditingController();
@@ -40,6 +43,10 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
 
   void startWhiteTime() {
     whiteTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (whiteTime == 30) {
+        playLowTimeSound();
+      }
+
       if (whiteTime > 0) {
         isBothTimerActive = true;
 
@@ -50,6 +57,7 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
         setState(() {
           isBothTimerActive = false;
         });
+        playTimeUpSound();
 
         stopWhiteTimer();
       }
@@ -58,6 +66,9 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
 
   void startBlackTime() {
     blackTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (blackTime == 30) {
+        playLowTimeSound();
+      }
       if (blackTime > 0) {
         isBothTimerActive = true;
 
@@ -68,6 +79,7 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
         setState(() {
           isBothTimerActive = false;
         });
+        playTimeUpSound();
 
         stopBlackTimer();
       }
@@ -94,9 +106,6 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
       blackInitialTime = newTimesModel!.blackDuration * 60;
       blackTime = blackInitialTime;
       blackIncrement = newTimesModel!.blackIncrement;
-      print('modelduration: ${newTimesModel!.whiteDuration}');
-      print(whiteTime);
-      print('white initial: $whiteInitialTime');
     });
   }
 
@@ -170,6 +179,18 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
     });
   }
 
+  void playMoveSound() {
+    audioPlayer.play(AssetSource('move.mp3'));
+  }
+
+  void playLowTimeSound() {
+    audioPlayer.play(AssetSource('lowtime.mp3'));
+  }
+
+  void playTimeUpSound() {
+    audioPlayer.play(AssetSource('timeup.mp3'));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -231,6 +252,7 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
                         : Colors.grey,
                     counter: whiteCounter,
                     onTap: () {
+                      playMoveSound();
                       if (!isBothTimerActive && isWhiteThinking) {
                       } else {
                         final activeTimer = getActiveTimer('');
@@ -335,6 +357,7 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
                   counter: blackCounter,
                   isTimeup: blackTime == 0,
                   onTap: () {
+                    playMoveSound();
                     if (!isBothTimerActive && isBlackThinking) {
                     } else {
                       final activeTimer = getActiveTimer('');
@@ -373,6 +396,19 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
     required int counter,
     required bool isTimeup,
   }) {
+    // Color boxColor(Color newColor) {
+    //   if (isTimeup) {
+    //     newColor = Colors.red;
+    //   } else if (duration > 30) {
+    //     newColor = Colors.deepPurple;
+    //   } else {
+    //     newColor = color;
+    //   }
+    //   return newColor;
+    // }
+
+    // final boxColor = boxColor(newColor);
+
     final minutes = duration ~/ 60;
     final seconds = duration.remainder(60);
     return GestureDetector(
