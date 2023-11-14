@@ -6,7 +6,7 @@ Konstellation is unique because:
   - It allows you to use separate times for White and Black
   - You can select any time you want
   - You can select any increment you want
-  - You are completely in contorl
+  - You are completely in control!
 
 ![Screenshot_20231113-205815~2](https://github.com/Gentle-mann/konstellation/assets/66851229/f95bd79d-1815-46b5-9608-64cebee14d02)
 
