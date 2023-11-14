@@ -180,7 +180,7 @@ class _GameDurationScreenState extends State<GameDurationScreen> {
   }
 
   void playMoveSound() {
-    audioPlayer.play(AssetSource('move.mp3'));
+    audioPlayer.play(AssetSource('bymove.mp3'));
   }
 
   void playLowTimeSound() {
